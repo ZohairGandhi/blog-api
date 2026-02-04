@@ -4,13 +4,23 @@ import {
   getUser,
   getUserPosts,
 } from "../controllers/usersController.js";
+import { validateUser } from "../middleware/validateUser.js";
+import { matchedData, validationResult } from "express-validator";
+import { hash } from "bcrypt";
 
 const router = Router();
 
-router.post("/register", async (req, res) => {
-  const { firstName, lastName, username, password } = req.body;
-  await createUser(firstName, lastName, username, password);
-  res.status(201).send("User created successfully!");
+router.post("/register", validateUser, async (req, res) => {
+  const errors = validationResult(req);
+
+  if (errors.isEmpty()) {
+    const { firstName, lastName, username, password } = matchedData(req);
+    const hashedPassword = await hash(password, 10);
+    await createUser(firstName, lastName, username, hashedPassword);
+    res.status(201).send("User created successfully!");
+  } else {
+    res.status(400).send({ errors });
+  }
 });
 
 router.get("/:id", async (req, res) => {

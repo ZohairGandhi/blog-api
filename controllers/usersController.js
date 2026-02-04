@@ -1,12 +1,12 @@
 import { prisma } from "../lib/prisma.js";
 
-async function createUser(firstName, lastName, username, password) {
+async function createUser(firstName, lastName, username, hashedPassword) {
   await prisma.user.create({
     data: {
       firstName: firstName,
       lastName: lastName,
       username: username,
-      password: password,
+      password: hashedPassword,
     },
   });
 }
@@ -37,4 +37,14 @@ async function getUserPosts(id) {
   return posts;
 }
 
-export { createUser, getUser, getUserPosts };
+async function isUniqueUsername(username) {
+  const user = await prisma.user.findUnique({
+    where: {
+      username: username,
+    },
+  });
+
+  return user ? false : true;
+}
+
+export { createUser, getUser, getUserPosts, isUniqueUsername };
