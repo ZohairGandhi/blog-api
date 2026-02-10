@@ -2,9 +2,13 @@ import express from "express";
 import { usersRouter } from "./routes/usersRouter.js";
 import { postsRouter } from "./routes/postsRouter.js";
 import { commentsRouter } from "./routes/commentsRouter.js";
+import { configPassport } from "./lib/passport.js";
+import passport from "passport";
 
 const app = express();
 const port = 3000;
+
+configPassport(passport);
 
 app.use(express.urlencoded({ extended: true }));
 

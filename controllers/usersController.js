@@ -24,6 +24,19 @@ async function getUser(id) {
   return user;
 }
 
+async function getUserByUsername(username) {
+  const user = await prisma.user.findUniqueOrThrow({
+    omit: {
+      password: true,
+    },
+    where: {
+      username: username,
+    },
+  });
+
+  return user;
+}
+
 async function getUserPosts(id) {
   const posts = await prisma.user.findUniqueOrThrow({
     select: {
@@ -47,4 +60,10 @@ async function isUniqueUsername(username) {
   return user ? false : true;
 }
 
-export { createUser, getUser, getUserPosts, isUniqueUsername };
+export {
+  createUser,
+  getUser,
+  getUserByUsername,
+  getUserPosts,
+  isUniqueUsername,
+};

@@ -7,6 +7,8 @@ import {
 import { validateUser } from "../middleware/validateUser.js";
 import { matchedData, validationResult } from "express-validator";
 import { hash } from "bcrypt";
+import { generateJwt } from "../lib/jwt.js";
+import passport from "passport";
 
 const router = Router();
 
@@ -22,6 +24,19 @@ router.post("/register", validateUser, async (req, res) => {
     res.status(400).send({ errors });
   }
 });
+
+router.post(
+  "/login",
+  passport.authenticate("local", { session: false }),
+  (req, res) => {
+    const { user } = req;
+    if (!user) {
+      res.status(401).send("Incorrect username or password.");
+    }
+    const token = generateJwt(user);
+    res.status(200).send(token);
+  },
+);
 
 router.get("/:id", async (req, res) => {
   const id = Number(req.params.id);
